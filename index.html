@@ -1,192 +1,459 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vegan Protein Calculator</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<style>
-body { font-family:sans-serif; max-width:700px; margin:auto; padding:20px; background:#fdfdfd;}
-h1,h2{text-align:center;}
-input, select { width:100%; padding:10px; margin:10px 0; font-size:1rem; border-radius:6px; border:1px solid #ccc;}
-button { padding:10px 15px; margin-top:10px; font-size:1rem; cursor:pointer; border:none; border-radius:6px; background-color:#4CAF50; color:white;}
-.food-list { list-style:none; padding:0; }
-.food-item { display:flex; justify-content:space-between; padding:8px; background:#f5f5f5; margin-bottom:5px; border-radius:5px;}
-.checkbox-group { display:flex; gap:10px; flex-wrap: wrap; margin-bottom:10px;}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vegan Protein Calculator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --primary: #4CAF50;
+      --primary-dark: #388E3C;
+      --text: #333;
+      --bg: #f9f9f9;
+      --card-bg: #fff;
+      --border: #ddd;
+      --accent: #FFC107;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    h1, h2, h3 {
+      text-align: center;
+      color: var(--primary-dark);
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #555;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background-color: #fff;
+      transition: border 0.3s;
+    }
+
+    input[type="number"]:focus,
+    select:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 8px;
+    }
+
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      font-weight: normal;
+      font-size: 0.95rem;
+    }
+
+    .checkbox-group input {
+      margin-right: 6px;
+      transform: scale(1.1);
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      margin: 20px 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+      background-color: var(--primary);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: var(--primary-dark);
+    }
+
+    #downloadPdfBtn {
+      background-color: #2196F3;
+    }
+
+    #downloadPdfBtn:hover {
+      background-color: #1976D2;
+    }
+
+    .result {
+      text-align: center;
+      font-size: 1.3rem;
+      margin: 20px 0;
+      font-weight: bold;
+      color: var(--primary-dark);
+    }
+
+    .food-list {
+      list-style: none;
+      margin-top: 15px;
+    }
+
+    .food-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 15px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+
+    .food-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .food-name {
+      font-weight: 500;
+      color: #222;
+    }
+
+    .food-protein {
+      font-weight: bold;
+      color: var(--primary-dark);
+    }
+
+    .affiliate-section {
+      margin-top: 30px;
+      padding: 15px;
+      background-color: #e3f2fd;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    .affiliate-section h3 {
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+
+    .affiliate-link {
+      color: #1976D2;
+      text-decoration: none;
+    }
+
+    .affiliate-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 15px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      button {
+        padding: 12px;
+        font-size: 1rem;
+      }
+
+      .food-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<h1>Vegan Protein Calculator</h1>
-<p>Enter your details to calculate your daily protein intake and get high-protein vegan food suggestions.</p>
+  <h1>Vegan Protein Calculator</h1>
+  <p>Enter your details to calculate your daily protein needs and get personalized high-protein vegan food suggestions.</p>
 
-<label>Weight (kg):</label>
-<input type="number" id="weight" placeholder="e.g., 70">
+  <div class="form-group">
+    <label>Weight (kg):</label>
+    <input type="number" id="weight" placeholder="e.g., 70" step="0.1">
+  </div>
 
-<label>Height (cm):</label>
-<input type="number" id="height" placeholder="e.g., 175">
+  <div class="form-group">
+    <label>Height (cm):</label>
+    <input type="number" id="height" placeholder="e.g., 175">
+  </div>
 
-<label>Age:</label>
-<input type="number" id="age" placeholder="e.g., 25">
+  <div class="form-group">
+    <label>Age:</label>
+    <input type="number" id="age" placeholder="e.g., 25">
+  </div>
 
-<label>Gender:</label>
-<select id="gender">
-  <option value="male">Male</option>
-  <option value="female">Female</option>
-</select>
+  <div class="form-group">
+    <label>Gender:</label>
+    <select id="gender">
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+  </div>
 
-<label>Activity Level:</label>
-<select id="activity">
-  <option value="1.2">Low (sedentary)</option>
-  <option value="1.5">Moderate (active)</option>
-  <option value="1.8">High (athlete)</option>
-</select>
+  <div class="form-group">
+    <label>Activity Level:</label>
+    <select id="activity">
+      <option value="1.2">Low (sedentary)</option>
+      <option value="1.5">Moderate (active)</option>
+      <option value="1.8">High (athlete)</option>
+    </select>
+  </div>
 
-<label>Goal:</label>
-<select id="goal">
-  <option value="1">Maintain Weight</option>
-  <option value="1.2">Muscle Gain</option>
-  <option value="0.8">Fat Loss</option>
-</select>
+  <div class="form-group">
+    <label>Goal:</label>
+    <select id="goal">
+      <option value="1">Maintain Weight</option>
+      <option value="1.2">Muscle Gain</option>
+      <option value="0.8">Fat Loss</option>
+    </select>
+  </div>
 
-<h3>Preferences / Allergies:</h3>
-<div class="checkbox-group">
-  <label><input type="checkbox" id="glutenFree"> Gluten-Free</label>
-  <label><input type="checkbox" id="nutFree"> Nut-Free</label>
-  <label><input type="checkbox" id="soyFree"> Soy-Free</label>
-</div>
+  <h3>Preferences / Allergies:</h3>
+  <div class="checkbox-group">
+    <label><input type="checkbox" id="glutenFree"> Gluten-Free</label>
+    <label><input type="checkbox" id="nutFree"> Nut-Free</label>
+    <label><input type="checkbox" id="soyFree"> Soy-Free</label>
+  </div>
 
-<button id="calculateBtn">Calculate & Show Foods</button>
+  <button id="calculateBtn">Calculate Protein & Foods</button>
 
-<h2>Your Protein Needs: <span id="proteinResult">-</span> g/day</h2>
+  <div class="result">
+    Your Daily Protein Need: <span id="proteinResult">-</span> g
+  </div>
 
-<ul class="food-list" id="foodList"></ul>
+  <ul class="food-list" id="foodList"></ul>
 
-<button id="downloadPdfBtn">Download PDF</button>
+  <button id="downloadPdfBtn">Download Results as PDF</button>
 
-<script>
-const foods = [
-  { name: "Lentils (cooked)", protein: 9, gluten:false, nut:false, soy:false },
-  { name: "Chickpeas (cooked)", protein: 8.9, gluten:false, nut:false, soy:false },
-  { name: "Black beans (cooked)", protein: 8.9, gluten:false, nut:false, soy:false },
-  { name: "Kidney beans (cooked)", protein: 8.7, gluten:false, nut:false, soy:false },
-  { name: "Edamame", protein: 11, gluten:false, nut:false, soy:true },
-  { name: "Tofu (firm)", protein: 8, gluten:false, nut:false, soy:true },
-  { name: "Tempeh", protein: 19, gluten:false, nut:false, soy:true },
-  { name: "Seitan", protein: 25, gluten:true, nut:false, soy:false },
-  { name: "Quinoa (cooked)", protein: 4.4, gluten:false, nut:false, soy:false },
-  { name: "Oats (dry)", protein: 16.9, gluten:true, nut:false, soy:false },
-  { name: "Peanut butter", protein: 25, gluten:false, nut:true, soy:false },
-  { name: "Almonds", protein: 21, gluten:false, nut:true, soy:false },
-  { name: "Chia seeds", protein: 17, gluten:false, nut:false, soy:false },
-  { name: "Hemp seeds", protein: 31, gluten:false, nut:false, soy:false },
-  { name: "Pumpkin seeds", protein: 30, gluten:false, nut:false, soy:false },
-  { name: "Sunflower seeds", protein: 21, gluten:false, nut:false, soy:false },
-  { name: "Walnuts", protein: 15, gluten:false, nut:true, soy:false },
-  { name: "Cashews", protein: 18, gluten:false, nut:true, soy:false },
-  { name: "Pistachios", protein: 20, gluten:false, nut:true, soy:false },
-  { name: "Spinach (cooked)", protein: 3, gluten:false, nut:false, soy:false },
-  { name: "Broccoli (cooked)", protein: 2.8, gluten:false, nut:false, soy:false },
-  { name: "Sweet corn", protein: 3.3, gluten:false, nut:false, soy:false },
-  { name: "Green peas", protein: 5, gluten:false, nut:false, soy:false },
-  { name: "Soy milk", protein: 3.3, gluten:false, nut:false, soy:true },
-  { name: "Nutritional yeast", protein: 50, gluten:false, nut:false, soy:false }
-];
+  <div class="affiliate-section">
+    <h3>Recommended Vegan Products</h3>
+    <p>
+      <a href="https://example.com/proteinpowder" class="affiliate-link" target="_blank">
+        1. Organic Vegan Protein Powder (Pea & Rice Blend)
+      </a>
+    </p>
+    <p>
+      <a href="https://example.com/proteinsnacks" class="affiliate-link" target="_blank">
+        2. High-Protein Plant-Based Snacks & Bars
+      </a>
+    </p>
+    <p><small>Disclosure: These are affiliate links. We may earn a commission at no extra cost to you.</small></p>
+  </div>
 
-const proteinResult = document.getElementById('proteinResult');
-const foodList = document.getElementById('foodList');
+  <script>
+    const foods = [
+      { name: "Lentils (cooked)", protein: 9.0, gluten: false, nut: false, soy: false },
+      { name: "Chickpeas (cooked)", protein: 8.9, gluten: false, nut: false, soy: false },
+      { name: "Black Beans (cooked)", protein: 8.9, gluten: false, nut: false, soy: false },
+      { name: "Kidney Beans (cooked)", protein: 8.7, gluten: false, nut: false, soy: false },
+      { name: "Edamame (cooked)", protein: 11.0, gluten: false, nut: false, soy: true },
+      { name: "Tofu (firm)", protein: 8.0, gluten: false, nut: false, soy: true },
+      { name: "Tempeh", protein: 19.0, gluten: false, nut: false, soy: true },
+      { name: "Seitan", protein: 25.0, gluten: true, nut: false, soy: false },
+      { name: "Quinoa (cooked)", protein: 4.4, gluten: false, nut: false, soy: false },
+      { name: "Oats (dry)", protein: 16.9, gluten: true, nut: false, soy: false },
+      { name: "Peanut Butter", protein: 25.0, gluten: false, nut: true, soy: false },
+      { name: "Almonds", protein: 21.0, gluten: false, nut: true, soy: false },
+      { name: "Cashews", protein: 18.0, gluten: false, nut: true, soy: false },
+      { name: "Walnuts", protein: 15.0, gluten: false, nut: true, soy: false },
+      { name: "Pistachios", protein: 20.0, gluten: false, nut: true, soy: false },
+      { name: "Chia Seeds", protein: 17.0, gluten: false, nut: false, soy: false },
+      { name: "Hemp Seeds", protein: 31.0, gluten: false, nut: false, soy: false },
+      { name: "Pumpkin Seeds", protein: 30.0, gluten: false, nut: false, soy: false },
+      { name: "Sunflower Seeds", protein: 21.0, gluten: false, nut: false, soy: false },
+      { name: "Flaxseeds", protein: 18.0, gluten: false, nut: false, soy: false },
+      { name: "Spirulina (dried)", protein: 57.0, gluten: false, nut: false, soy: false },
+      { name: "Nutritional Yeast", protein: 50.0, gluten: false, nut: false, soy: false },
+      { name: "Soy Milk", protein: 3.3, gluten: false, nut: false, soy: true },
+      { name: "Pea Protein Powder", protein: 80.0, gluten: false, nut: false, soy: false },
+      { name: "Brown Rice Protein Powder", protein: 75.0, gluten: false, nut: false, soy: false },
+      { name: "Spinach (cooked)", protein: 3.0, gluten: false, nut: false, soy: false },
+      { name: "Broccoli (cooked)", protein: 2.8, gluten: false, nut: false, soy: false },
+      { name: "Sweet Corn", protein: 3.3, gluten: false, nut: false, soy: false },
+      { name: "Green Peas (cooked)", protein: 5.0, gluten: false, nut: false, soy: false },
+      { name: "Chickpea Pasta (dry)", protein: 20.0, gluten: false, nut: false, soy: false },
+      { name: "Lentil Pasta (dry)", protein: 24.0, gluten: false, nut: false, soy: false },
+      { name: "Soy Yogurt", protein: 4.0, gluten: false, nut: false, soy: true },
+      { name: "Almond Butter", protein: 20.0, gluten: false, nut: true, soy: false },
+      { name: "Peanuts", protein: 26.0, gluten: false, nut: true, soy: false },
+      { name: "Tahini (Sesame Paste)", protein: 17.0, gluten: false, nut: false, soy: false },
+      { name: "Mushrooms (cooked)", protein: 3.1, gluten: false, nut: false, soy: false },
+      { name: "Avocado", protein: 2.0, gluten: false, nut: false, soy: false },
+      { name: "Kale (cooked)", protein: 2.9, gluten: false, nut: false, soy: false },
+      { name: "Oat Milk", protein: 1.0, gluten: true, nut: false, soy: false }
+    ];
 
-function displayFoods(filteredFoods) {
-  foodList.innerHTML = '';
-  filteredFoods.forEach(food => {
-    const li = document.createElement('li');
-    li.className = 'food-item';
-    li.innerHTML = `<span>${food.name}</span> <strong>${food.protein}g</strong>`;
-    foodList.appendChild(li);
-  });
-}
+    const proteinResult = document.getElementById('proteinResult');
+    const foodList = document.getElementById('foodList');
 
-document.getElementById('calculateBtn').addEventListener('click', () => {
-  const weight = parseFloat(document.getElementById('weight').value);
-  const height = parseFloat(document.getElementById('height').value);
-  const age = parseFloat(document.getElementById('age').value);
-  const gender = document.getElementById('gender').value;
-  const activity = parseFloat(document.getElementById('activity').value);
-  const goal = parseFloat(document.getElementById('goal').value);
+    function displayFoods(filteredFoods) {
+      foodList.innerHTML = '';
+      filteredFoods.sort((a, b) => b.protein - a.protein); // Sort by protein descending
+      filteredFoods.forEach(food => {
+        const li = document.createElement('li');
+        li.className = 'food-item';
+        li.innerHTML = `
+          <span class="food-name">${food.name}</span>
+          <span class="food-protein">${food.protein}g per 100g</span>
+        `;
+        foodList.appendChild(li);
+      });
+    }
 
-  if(!weight || !height || !age) {
-    alert("Please fill in all required fields.");
-    return;
-  }
+    document.getElementById('calculateBtn').addEventListener('click', () => {
+      const weight = parseFloat(document.getElementById('weight').value);
+      const height = parseFloat(document.getElementById('height').value);
+      const age = parseFloat(document.getElementById('age').value);
+      const gender = document.getElementById('gender').value;
+      const activity = parseFloat(document.getElementById('activity').value);
+      const goal = parseFloat(document.getElementById('goal').value);
 
-  // Calculate protein intake (simplified)
-  const protein = Math.round(weight * activity * goal);
-  proteinResult.textContent = protein;
+      if (!weight || !height || !age) {
+        alert("Please fill in all required fields: Weight, Height, and Age.");
+        return;
+      }
 
-  // Filter foods based on preferences
-  const glutenFree = document.getElementById('glutenFree').checked;
-  const nutFree = document.getElementById('nutFree').checked;
-  const soyFree = document.getElementById('soyFree').checked;
+      // Estimate BMR using Mifflin-St Jeor (simplified), then adjust
+      const bmr = gender === 'male'
+        ? 10 * weight + 6.25 * height - 5 * age + 5
+        : 10 * weight + 6.25 * height - 5 * age - 161;
 
-  const filteredFoods = foods.filter(f => 
-    (!glutenFree || !f.gluten) &&
-    (!nutFree || !f.nut) &&
-    (!soyFree || !f.soy)
-  );
+      const maintenanceCalories = bmr * activity;
+      let proteinIntake = weight * activity * goal;
+      proteinIntake = Math.round(proteinIntake * 10) / 10; // Round to 1 decimal
 
-  displayFoods(filteredFoods);
-});
+      proteinResult.textContent = proteinIntake;
 
-// PDF download with preferences
-document.getElementById('downloadPdfBtn').addEventListener('click', () => {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
+      const glutenFree = document.getElementById('glutenFree').checked;
+      const nutFree = document.getElementById('nutFree').checked;
+      const soyFree = document.getElementById('soyFree').checked;
 
-  const protein = proteinResult.textContent;
-  const weight = document.getElementById('weight').value;
-  const height = document.getElementById('height').value;
-  const age = document.getElementById('age').value;
-  const gender = document.getElementById('gender').value;
-  const activityText = document.getElementById('activity').selectedOptions[0].text;
-  const goalText = document.getElementById('goal').selectedOptions[0].text;
+      const filteredFoods = foods.filter(f =>
+        (!glutenFree || !f.gluten) &&
+        (!nutFree || !f.nut) &&
+        (!soyFree || !f.soy)
+      );
 
-  const glutenFree = document.getElementById('glutenFree').checked ? "Yes" : "No";
-  const nutFree = document.getElementById('nutFree').checked ? "Yes" : "No";
-  const soyFree = document.getElementById('soyFree').checked ? "Yes" : "No";
+      displayFoods(filteredFoods);
+    });
 
-  doc.setFontSize(16);
-  doc.text("Vegan Protein Calculator Results", 20, 20);
-  doc.setFontSize(12);
-  doc.text(`Weight: ${weight} kg`, 20, 35);
-  doc.text(`Height: ${height} cm`, 20, 42);
-  doc.text(`Age: ${age}`, 20, 49);
-  doc.text(`Gender: ${gender}`, 20, 56);
-  doc.text(`Activity Level: ${activityText}`, 20, 63);
-  doc.text(`Goal: ${goalText}`, 20, 70);
-  doc.text(`Preferences: Gluten-Free: ${glutenFree}, Nut-Free: ${nutFree}, Soy-Free: ${soyFree}`, 20, 77);
-  doc.text(`Recommended Protein Intake: ${protein} g/day`, 20, 85);
+    // PDF Download
+    document.getElementById('downloadPdfBtn').addEventListener('click', () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
 
-  doc.text("High-Protein Vegan Foods:", 20, 95);
-  let y = 105;
-  const filteredFoods = foods.filter(f => 
-    (!document.getElementById('glutenFree').checked || !f.gluten) &&
-    (!document.getElementById('nutFree').checked || !f.nut) &&
-    (!document.getElementById('soyFree').checked || !f.soy)
-  );
-  filteredFoods.forEach(food => {
-    doc.text(`${food.name}: ${food.protein} g`, 25, y);
-    y += 7;
-  });
+      const protein = proteinResult.textContent;
+      const weight = document.getElementById('weight').value || '-';
+      const height = document.getElementById('height').value || '-';
+      const age = document.getElementById('age').value || '-';
+      const gender = document.getElementById('gender').value;
+      const activityText = document.getElementById('activity').selectedOptions[0].text;
+      const goalText = document.getElementById('goal').selectedOptions[0].text;
 
-  // Affiliate links
-  y += 10;
-  doc.text("Recommended Products:", 20, y);
-  doc.text("1. Vegan Protein Powder - https://YOUR_AFFILIATE_LINK_1", 25, y+10);
-  doc.text("2. Plant-Based Protein Snacks - https://YOUR_AFFILIATE_LINK_2", 25, y+20);
+      const glutenFree = document.getElementById('glutenFree').checked ? "Yes" : "No";
+      const nutFree = document.getElementById('nutFree').checked ? "Yes" : "No";
+      const soyFree = document.getElementById('soyFree').checked ? "Yes" : "No";
 
-  doc.save("vegan-protein-results.pdf");
-});
-</script>
+      doc.setFontSize(18);
+      doc.setTextColor(0, 100, 0);
+      doc.text("Vegan Protein Calculator", 105, 20, null, null, 'center');
 
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Weight: ${weight} kg`, 20, 35);
+      doc.text(`Height: ${height} cm`, 20, 45);
+      doc.text(`Age: ${age} years`, 20, 55);
+      doc.text(`Gender: ${gender.charAt(0).toUpperCase() + gender.slice(1)}`, 20, 65);
+      doc.text(`Activity Level: ${activityText}`, 20, 75);
+      doc.text(`Goal: ${goalText}`, 20, 85);
+
+      doc.text(`Gluten-Free: ${glutenFree}, Nut-Free: ${nutFree}, Soy-Free: ${soyFree}`, 20, 95);
+
+      doc.setFontSize(14);
+      doc.text(`Daily Protein Target: ${protein} g`, 20, 110);
+
+      doc.setFontSize(12);
+      doc.text("Recommended High-Protein Vegan Foods (per 100g):", 20, 125);
+      let y = 135;
+      const filteredFoods = foods.filter(f =>
+        (!document.getElementById('glutenFree').checked || !f.gluten) &&
+        (!document.getElementById('nutFree').checked || !f.nut) &&
+        (!document.getElementById('soyFree').checked || !f.soy)
+      );
+      filteredFoods.sort((a, b) => b.protein - a.protein);
+      filteredFoods.forEach(food => {
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(`${food.name}: ${food.protein}g`, 25, y);
+        y += 8;
+      });
+
+      y += 10;
+      if (y > 270) doc.addPage();
+      doc.setFontSize(12);
+      doc.text("Recommended Products:", 20, y);
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 255);
+      doc.textWithLink("1. Organic Vegan Protein Powder", 25, y + 10, {
+        url: "https://example.com/proteinpowder"
+      });
+      doc.textWithLink("2. Plant-Based Protein Snacks", 25, y + 16, {
+        url: "https://example.com/proteinsnacks"
+      });
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(9);
+      doc.text("(Affiliate links - support our site at no extra cost)", 25, y + 24);
+
+      doc.save(`vegan-protein-results-${new Date().toISOString().slice(0,10)}.pdf`);
+    });
+  </script>
 </body>
 </html>
