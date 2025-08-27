@@ -13,7 +13,6 @@
       --bg: #f9f9f9;
       --card-bg: #fff;
       --border: #ddd;
-      --accent: #FFC107;
     }
 
     * {
@@ -164,28 +163,6 @@
       color: var(--primary-dark);
     }
 
-    .affiliate-section {
-      margin-top: 30px;
-      padding: 15px;
-      background-color: #e3f2fd;
-      border-radius: 8px;
-      font-size: 0.9rem;
-    }
-
-    .affiliate-section h3 {
-      margin-bottom: 10px;
-      font-size: 1.1rem;
-    }
-
-    .affiliate-link {
-      color: #1976D2;
-      text-decoration: none;
-    }
-
-    .affiliate-link:hover {
-      text-decoration: underline;
-    }
-
     @media (max-width: 600px) {
       body {
         padding: 15px;
@@ -271,21 +248,6 @@
 
   <button id="downloadPdfBtn">Download Results as PDF</button>
 
-  <div class="affiliate-section">
-    <h3>Recommended Vegan Products</h3>
-    <p>
-      <a href="https://example.com/proteinpowder" class="affiliate-link" target="_blank">
-        1. Organic Vegan Protein Powder (Pea & Rice Blend)
-      </a>
-    </p>
-    <p>
-      <a href="https://example.com/proteinsnacks" class="affiliate-link" target="_blank">
-        2. High-Protein Plant-Based Snacks & Bars
-      </a>
-    </p>
-    <p><small>Disclosure: These are affiliate links. We may earn a commission at no extra cost to you.</small></p>
-  </div>
-
   <script>
     const foods = [
       { name: "Lentils (cooked)", protein: 9.0, gluten: false, nut: false, soy: false },
@@ -334,7 +296,7 @@
 
     function displayFoods(filteredFoods) {
       foodList.innerHTML = '';
-      filteredFoods.sort((a, b) => b.protein - a.protein); // Sort by protein descending
+      filteredFoods.sort((a, b) => b.protein - a.protein);
       filteredFoods.forEach(food => {
         const li = document.createElement('li');
         li.className = 'food-item';
@@ -359,12 +321,11 @@
         return;
       }
 
-      // Estimate BMR using Mifflin-St Jeor (simplified), then adjust
+      // Estimate BMR using Mifflin-St Jeor
       const bmr = gender === 'male'
         ? 10 * weight + 6.25 * height - 5 * age + 5
         : 10 * weight + 6.25 * height - 5 * age - 161;
 
-      const maintenanceCalories = bmr * activity;
       let proteinIntake = weight * activity * goal;
       proteinIntake = Math.round(proteinIntake * 10) / 10; // Round to 1 decimal
 
@@ -383,7 +344,7 @@
       displayFoods(filteredFoods);
     });
 
-    // PDF Download
+    // PDF Download (no affiliate content)
     document.getElementById('downloadPdfBtn').addEventListener('click', () => {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
@@ -412,15 +373,16 @@
       doc.text(`Gender: ${gender.charAt(0).toUpperCase() + gender.slice(1)}`, 20, 65);
       doc.text(`Activity Level: ${activityText}`, 20, 75);
       doc.text(`Goal: ${goalText}`, 20, 85);
-
-      doc.text(`Gluten-Free: ${glutenFree}, Nut-Free: ${nutFree}, Soy-Free: ${soyFree}`, 20, 95);
+      doc.text(`Gluten-Free: ${glutenFree}`, 20, 95);
+      doc.text(`Nut-Free: ${nutFree}`, 20, 105);
+      doc.text(`Soy-Free: ${soyFree}`, 20, 115);
 
       doc.setFontSize(14);
-      doc.text(`Daily Protein Target: ${protein} g`, 20, 110);
+      doc.text(`Daily Protein Target: ${protein} g`, 20, 130);
 
       doc.setFontSize(12);
-      doc.text("Recommended High-Protein Vegan Foods (per 100g):", 20, 125);
-      let y = 135;
+      doc.text("Top High-Protein Vegan Foods (per 100g):", 20, 145);
+      let y = 155;
       const filteredFoods = foods.filter(f =>
         (!document.getElementById('glutenFree').checked || !f.gluten) &&
         (!document.getElementById('nutFree').checked || !f.nut) &&
@@ -435,22 +397,6 @@
         doc.text(`${food.name}: ${food.protein}g`, 25, y);
         y += 8;
       });
-
-      y += 10;
-      if (y > 270) doc.addPage();
-      doc.setFontSize(12);
-      doc.text("Recommended Products:", 20, y);
-      doc.setFontSize(10);
-      doc.setTextColor(0, 0, 255);
-      doc.textWithLink("1. Organic Vegan Protein Powder", 25, y + 10, {
-        url: "https://example.com/proteinpowder"
-      });
-      doc.textWithLink("2. Plant-Based Protein Snacks", 25, y + 16, {
-        url: "https://example.com/proteinsnacks"
-      });
-      doc.setTextColor(0, 0, 0);
-      doc.setFontSize(9);
-      doc.text("(Affiliate links - support our site at no extra cost)", 25, y + 24);
 
       doc.save(`vegan-protein-results-${new Date().toISOString().slice(0,10)}.pdf`);
     });
